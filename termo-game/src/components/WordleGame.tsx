@@ -42,12 +42,12 @@ function WordleGame() {
   };
 
   return (
-    <div className="text-center mt-8">
+    <div className="text-center mt-12">
       <div className="flex justify-center">
         {feedback.map((f, index) => (
           <div
             key={index}
-            className={`w-12 h-12 p-3 rounded-full border border-black m-2 ${
+            className={`w-14 h-14 p-4 rounded-full border bg-[white] border-black m-2 ${
               f === "correct"
                 ? "bg-green-400"
                 : f === "wrongPosition"
@@ -72,7 +72,7 @@ function WordleGame() {
         ))}
       </div>
       <button
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+        className="mt-8 px-4 py-2 bg-blue-500 text-white font-bold rounded"
         onClick={checkGuess}
       >
         Submit Guess
