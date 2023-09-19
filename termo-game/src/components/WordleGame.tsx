@@ -9,7 +9,7 @@ export function WordleGame() {
   const [attempts, setAttempts] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [activeRow, setActiveRow] = useState(0);
-
+  const [command, setCommando] = useState("");
   const handleInputChange = (index: number, value: string) => {
     if (!gameOver && activeRow < guess.length) {
       const newGuess = [...guess];
