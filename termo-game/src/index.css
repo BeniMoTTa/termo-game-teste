@@ -80,6 +80,10 @@
   height: 100vh;
 }
 
+.allign {
+  margin: 0 auto;
+}
+
 .title {
   font-family: "Montserrat", sans-serif;
   font-weight: 800;
