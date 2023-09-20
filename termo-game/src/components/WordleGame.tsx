@@ -47,7 +47,7 @@ const WordleGame = () => {
     return () => {
       window.removeEventListener("keyup", handleKeyPress);
     };
-  }, [letters]);
+  }, [letters, forbiddenChars]);
   return (
     <>
       <div className="App">
