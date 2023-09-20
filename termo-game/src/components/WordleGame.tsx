@@ -5,29 +5,58 @@ const WordleGame = () => {
   const maxLetters = 5;
   const numRows = 5;
 
+  const isAllowedLetter = (key: string) =>
+    /[QWERTYUIOPASDFGHJKLZXCVBNM]/.test(key);
+
+  const forbiddenChars = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "Backspace",
+    "Enter",
+    "Tab",
+    "Control",
+    "Shift",
+    "CapsLock",
+    "Quote",
+    "Alt",
+    "ContextMenu",
+  ];
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      const { key } = e;
-      if (key.match(/[a-zA-Z]/) && letters.length < maxLetters) {
+      const key = e.key.toUpperCase();
+      if (
+        isAllowedLetter(key) &&
+        !forbiddenChars.includes(key) &&
+        letters.length < maxLetters * numRows
+      ) {
+        e.preventDefault();
         setLetters((prevLetters) => [...prevLetters, key]);
       }
     };
 
-    window.addEventListener("keydown", handleKeyPress);
+    window.addEventListener("keyup", handleKeyPress);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyPress);
+      window.removeEventListener("keyup", handleKeyPress);
     };
   }, [letters]);
   return (
     <>
       <div className="App">
-        <div className="w-[50%] allign">
+        <div className="w-[540px] allign">
           <div className="grid grid-cols-5 gap-1">
             {Array.from({ length: maxLetters * numRows }).map((_, index) => (
               <div
                 key={index}
-                className="w-28 h-28 mb-2 bg-blue-500 text-white text-2xl flex items-center justify-center rounded"
+                className="w-24 h-24 mb-2 bg-blue-500 text-white text-[38px] flex items-center justify-center rounded"
               >
                 {letters[index]}
               </div>
