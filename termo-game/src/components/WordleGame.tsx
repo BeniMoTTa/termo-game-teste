@@ -1,103 +1,108 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const WORD_TO_GUESS = "HELLO";
-const MAX_ATTEMPTS = 6;
+const WordleGame = () => {
+  const [palavraSecreta, setPalavraSecreta] = useState(gerarPalavra());
+  const [tentativa, setTentativa] = useState("");
+  const [resultado, setResultado] = useState<string | null>("");
+  const [tentativasRealizadas, setTentativasRealizadas] = useState(0);
 
-export function WordleGame() {
-  const [guess, setGuess] = useState(["", "", "", "", ""]);
-  const [feedback, setFeedback] = useState(["", "", "", "", ""]);
-  const [attempts, setAttempts] = useState(0);
-  const [gameOver, setGameOver] = useState(false);
-  const [activeRow, setActiveRow] = useState(0);
-  const [command, setCommando] = useState("");
-  const handleInputChange = (index: number, value: string) => {
-    if (!gameOver && activeRow < guess.length) {
-      const newGuess = [...guess];
-      newGuess[activeRow] = value.toUpperCase();
-      setGuess(newGuess);
-    }
-  };
-
-  const checkGuess = () => {
-    if (gameOver) return;
-
-    const newAttempts = attempts + 1;
-    const newFeedback = [];
-
-    for (let i = 0; i < guess.length; i++) {
-      if (guess[i] === WORD_TO_GUESS[i]) {
-        newFeedback[i] = "correct";
-      } else if (WORD_TO_GUESS.includes(guess[i])) {
-        newFeedback[i] = "wrongPosition";
-      } else {
-        newFeedback[i] = "";
-      }
-    }
-
-    setFeedback(newFeedback);
-    setAttempts(newAttempts);
-    setActiveRow(activeRow + 1);
-
-    if (guess.join("") === WORD_TO_GUESS) {
-      alert(
-        `Parabéns! Você adivinhou a palavra "${WORD_TO_GUESS}" em ${newAttempts} tentativas.`
-      );
-      setGameOver(true);
-    } else if (newAttempts >= MAX_ATTEMPTS) {
-      alert(`Game Over! A palavra correta era "${WORD_TO_GUESS}".`);
-      setGameOver(true);
-    }
-  };
-
-  const keyboardLetters = "QWERTYUIOPASDFGHJKLÇZXCVBNM";
-
-  return (
-    <div className="text-center mt-12">
-      <div className="flex justify-center">
-        {feedback.map((f, index) => (
-          <div
-            key={index}
-            className={`w-16 h-16 p-4 border bg-[white] border-black m-2 ${
-              f === "correct"
-                ? "bg-green-400"
-                : f === "wrongPosition"
-                ? "bg-yellow-400"
-                : ""
-            }`}
-          >
-            {guess[index]}
-          </div>
-        ))}
-      </div>
-      <div className="mt-4">
-        <div className="flex flex-wrap justify-center">
-          <div className="flex flex-wrap w-[700px] text-[white]">
-            {Array.from(keyboardLetters).map((letter, index) => (
-              <button
-                key={index}
-                className="w-12 h-12 p-2 text-3xl rounded-lg border-2 border-black m-2"
-                onClick={() => handleInputChange(activeRow, letter)}
-                disabled={
-                  gameOver || activeRow >= guess.length || !!guess[activeRow]
-                }
-              >
-                {letter}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-      <button
-        className="mt-8 px-4 py-2 bg-blue-500 text-white font-bold rounded"
-        onClick={checkGuess}
-        disabled={
-          gameOver ||
-          activeRow >= guess.length ||
-          guess[activeRow].trim() === ""
+  function gerarPalavra() {
+    const palavras = [
+      "sabio",
+      "furia",
+      "pleno",
+      "fazer",
+      "caber",
+      "julho",
+      "treva",
+      "amora",
+      "pauta",
+      "labio",
+    ];
+    return palavras[Math.floor(Math.random() * palavras.length)];
+  }
+  const verificarTentativa = () => {
+    if (tentativa === palavraSecreta) {
+      setResultado("Você venceu! A palavra era " + palavraSecreta);
+    } else {
+      const letrasCorretas = [];
+      const letrasIncorretas = [];
+      for (let i = 0; i < tentativa.length; i++) {
+        if (palavraSecreta.includes(tentativa[i])) {
+          if (palavraSecreta[i] === tentativa[i]) {
+            letrasCorretas.push(tentativa[i]);
+          } else {
+            letrasIncorretas.push(tentativa[i]);
+          }
         }
+      }
+      setResultado(null);
+    }
+    setTentativasRealizadas(tentativasRealizadas + 1);
+  };
+  useEffect(() => {
+    const tentativasRows = [];
+    for (let i = 0; i < tentativasRealizadas + 1; i++) {
+      tentativasRows.push(
+        <div key={i} className="flex space-x-2 mt-2">
+          {[...Array(5)].map((_, j) => (
+            <div
+              key={j}
+              className={
+                i < tentativasRealizadas
+                  ? "w-6 h-6 bg-gray-300 rounded"
+                  : "w-6 h-6 bg-white rounded"
+              }
+            >
+              {i < tentativasRealizadas && tentativa[j] ? tentativa[j] : null}
+            </div>
+          ))}
+        </div>
+      );
+    }
+    setResultado(resultado);
+    setTentativa(tentativa);
+    return () => {
+      setPalavraSecreta(null);
+      setTentativa(null);
+      setResultado(null);
+      setTentativasRealizadas(0);
+    };
+  }, [tentativa, resultado, tentativasRealizadas]);
+  const renderTentativas = () => {
+    const tentativasRows = [];
+    for (let i = 0; i < tentativasRealizadas + 1; i++) {
+      tentativasRows.push(
+        <div key={i} className="flex space-x-2 mt-2">
+          {[...Array(5)].map((_, j) => (
+            <div key={j} className="w-6 h-6 bg-gray-300 rounded"></div>
+          ))}
+        </div>
+      );
+    }
+    return tentativasRows;
+  };
+  return (
+    <div className="container mx-auto text-center mt-8">
+      <h1 className="text-3xl font-semibold mb-4">Wordle Game</h1>
+      <p>Adivinhe a palavra secreta de 5 letras.</p>
+      <input
+        type="text"
+        maxLength={5}
+        className="border p-2 mt-4"
+        value={tentativa}
+        onChange={(e) => setTentativa(e.target.value)}
+      />
+      <button
+        className="bg-blue-500 text-white p-2 mt-2 hover:bg-blue-600 rounded"
+        onClick={verificarTentativa}
       >
-        Submit Guess
+        Verificar
       </button>
+      <p className="mt-4">{resultado}</p>
+      <div className="mt-4">{renderTentativas()}</div>
     </div>
   );
-}
+};
+
+export default WordleGame;

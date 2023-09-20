@@ -1,4 +1,4 @@
-import { WordleGame } from "./components/WordleGame";
+import WordleGame from "./components/WordleGame";
 
 function App() {
   return (
