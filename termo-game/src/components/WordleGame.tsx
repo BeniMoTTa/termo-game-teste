@@ -63,8 +63,8 @@ const WordleGame = () => {
     setResultado(resultado);
     setTentativa(tentativa);
     return () => {
-      setPalavraSecreta(null);
-      setTentativa(null);
+      setPalavraSecreta("");
+      setTentativa("");
       setResultado(null);
       setTentativasRealizadas(0);
     };
@@ -86,13 +86,17 @@ const WordleGame = () => {
     <div className="container mx-auto text-center mt-8">
       <h1 className="text-3xl font-semibold mb-4">Wordle Game</h1>
       <p>Adivinhe a palavra secreta de 5 letras.</p>
-      <input
-        type="text"
-        maxLength={5}
-        className="border p-2 mt-4"
-        value={tentativa}
-        onChange={(e) => setTentativa(e.target.value)}
-      />
+      <div className="flex flex-wrap justify-center mt-4">
+        {[...Array(5)].map((_, j) => (
+          <input
+            type="text"
+            maxLength={1}
+            key={j}
+            className="border p-2 mt-4"
+            onChange={(e) => setTentativa(e.target.value)}
+          />
+        ))}
+      </div>
       <button
         className="bg-blue-500 text-white p-2 mt-2 hover:bg-blue-600 rounded"
         onClick={verificarTentativa}
