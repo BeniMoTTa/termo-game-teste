@@ -63,9 +63,6 @@ const WordleGame = () => {
             ))}
           </div>
           <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
         </div>
       </div>
     </>
