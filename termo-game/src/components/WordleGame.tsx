@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 
 const WordleGame = () => {
   const [letters, setLetters] = useState([]);
@@ -17,21 +17,19 @@ const WordleGame = () => {
   const maxRow = 5;
 
   useEffect(() => {
-    // Get the answer from the server
     fetch("https://random-word-api.herokuapp.com/word?length=5")
       .then((response) => response.json())
-      .then((data) => setAnswer(data[0])); // Use data[0] to get the first word from the response
+      .then((data) => setAnswer(data[0]));
   }, []);
 
-  const handleKeyPress = (event) => {
-    // Check if the key is a letter
-    if (event.key.match(/[a-z]/i)) {
-      // Check if the current column is within bounds
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleKeyPress = (event: { key: string }) => {
+    const key = event.key.toUpperCase();
+    if (/[QWERTYUIOPASDFGHJKLZXCVBNM]/.test(key)) {
       if (currentCol < maxCol) {
-        // Add the letter to the board
         setBoard((prevBoard) => {
           const newBoard = [...prevBoard];
-          newBoard[currentRow][currentCol] = event.key.toUpperCase();
+          newBoard[currentRow][currentCol] = key;
           setCurrentCol((prevCol) => prevCol + 1);
           return newBoard;
         });
@@ -39,41 +37,11 @@ const WordleGame = () => {
     }
   };
 
-  useEffect(() => {
-    // Check if the user has entered a full word
-    if (currentCol === maxCol) {
-      // Check if the word is correct
-      if (board[currentRow].join("") === answer) {
-        // The user has won!
-        alert("You win!");
-      } else {
-        // The user has lost
-        alert("You lose!");
-      }
-
-      // Reset the board
-      setBoard((prevBoard) => prevBoard.map((row) => row.map(() => "")));
-
-      // Move to the next row
-      setCurrentRow((prevRow) => prevRow + 1);
-
-      // Reset the current column
-      setCurrentCol(0);
-    }
-  }, [board, currentRow, currentCol, answer]);
-
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [currentCol, handleKeyPress]);
-
-  return (
-    <div className="App">
+  const boardComponent = useMemo(() => {
+    return (
       <div className="w-[540px] mx-auto my-5">
         {Array.from({ length: maxRow }).map((_, rowIndex) => (
-          <div key={rowIndex} className={`grid grid-cols-${maxCol} gap-2`}>
+          <div key={rowIndex} className="flex justify-center  gap-4 mb-4">
             {Array.from({ length: maxCol }).map((_, colIndex) => (
               <div
                 key={colIndex}
@@ -85,8 +53,30 @@ const WordleGame = () => {
           </div>
         ))}
       </div>
-    </div>
-  );
+    );
+  }, [board]);
+
+  useEffect(() => {
+    if (currentCol === maxCol) {
+      if (board[currentRow].join("") === answer) {
+        alert("You win!");
+      } else {
+        alert("You lose!");
+      }
+      setBoard((prevBoard) => prevBoard.map((row) => row.map(() => "")));
+      setCurrentRow((prevRow) => prevRow + 1);
+      setCurrentCol(0);
+    }
+  }, [board, currentRow, currentCol, answer]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress);
+    };
+  }, [currentCol, handleKeyPress]);
+
+  return <div className="App">{boardComponent}</div>;
 };
 
 export default WordleGame;
