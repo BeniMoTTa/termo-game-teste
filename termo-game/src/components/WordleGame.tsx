@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 const WordleGame = () => {
   const [letters, setLetters] = useState([]);
@@ -22,7 +22,6 @@ const WordleGame = () => {
       .then((data) => setAnswer(data[0]));
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleKeyPress = (event: { key: string }) => {
     const key = event.key.toUpperCase();
     if (/[QWERTYUIOPASDFGHJKLZXCVBNM]/.test(key)) {
@@ -36,25 +35,6 @@ const WordleGame = () => {
       }
     }
   };
-
-  const boardComponent = useMemo(() => {
-    return (
-      <div className="w-[540px] mx-auto my-5">
-        {Array.from({ length: maxRow }).map((_, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center  gap-4 mb-4">
-            {Array.from({ length: maxCol }).map((_, colIndex) => (
-              <div
-                key={colIndex}
-                className="w-16 h-16 bg-blue-500 text-white text-[24px] flex items-center justify-center rounded"
-              >
-                {board[rowIndex][colIndex]}
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-    );
-  }, [board]);
 
   useEffect(() => {
     if (currentCol === maxCol) {
@@ -76,7 +56,11 @@ const WordleGame = () => {
     };
   }, [currentCol, handleKeyPress]);
 
-  return <div className="App">{boardComponent}</div>;
+  return (
+    <div className="App">
+      <div></div>
+    </div>
+  );
 };
 
 export default WordleGame;
