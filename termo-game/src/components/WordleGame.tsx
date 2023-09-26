@@ -1,66 +1,186 @@
 import React, { useState, useEffect } from "react";
-
-const WordleGame = () => {
-  const [letters, setLetters] = useState([]);
-  const [board, setBoard] = useState([
-    ["", "", "", "", ""],
-    ["", "", "", "", ""],
-    ["", "", "", "", ""],
-    ["", "", "", "", ""],
-    ["", "", "", "", ""],
-    ["", "", "", "", ""],
-  ]);
-  const [currentRow, setCurrentRow] = useState(0);
-  const [currentCol, setCurrentCol] = useState(0);
-  const [answer, setAnswer] = useState("");
-  const maxCol = 5;
-  const maxRow = 5;
+import { wordsMock } from "../mock/mock";
+export const WordleGame = () => {
+  const [word, setWord] = useState<string>("");
+  const [guessedWords, setGuessedWords] = useState<string[][]>([[]]);
+  const [availableSpace, setAvailableSpace] = useState<number>(1);
+  const [guessedWordCount, setGuessedWordCount] = useState<number>(0);
 
   useEffect(() => {
-    fetch("https://random-word-api.herokuapp.com/word?length=5")
-      .then((response) => response.json())
-      .then((data) => setAnswer(data[0]));
+    createSquares();
+    getNewWord();
   }, []);
 
-  const handleKeyPress = (event: { key: string }) => {
-    const key = event.key.toUpperCase();
-    if (/[QWERTYUIOPASDFGHJKLZXCVBNM]/.test(key)) {
-      if (currentCol < maxCol) {
-        setBoard((prevBoard) => {
-          const newBoard = [...prevBoard];
-          newBoard[currentRow][currentCol] = key;
-          setCurrentCol((prevCol) => prevCol + 1);
-          return newBoard;
-        });
+  const getNewWord = () => {
+    const randomIndex = Math.floor(Math.random() * wordsMock.length);
+    const randomWord = wordsMock[randomIndex];
+    setWord(randomWord);
+  };
+
+  const getCurrentWordArr = () => {
+    const numberOfGuessedWords = guessedWords.length;
+    return guessedWords[numberOfGuessedWords - 1];
+  };
+
+  const updateGuessedWords = (letter: string) => {
+    const currentWordArr = getCurrentWordArr();
+
+    if (currentWordArr && currentWordArr.length < 5) {
+      currentWordArr.push(letter);
+
+      const availableSpaceEl = document.getElementById(String(availableSpace));
+
+      setAvailableSpace(availableSpace + 1);
+      if (availableSpaceEl) {
+        availableSpaceEl.textContent = letter;
       }
     }
   };
 
-  useEffect(() => {
-    if (currentCol === maxCol) {
-      if (board[currentRow].join("") === answer) {
-        alert("You win!");
-      } else {
-        alert("You lose!");
-      }
-      setBoard((prevBoard) => prevBoard.map((row) => row.map(() => "")));
-      setCurrentRow((prevRow) => prevRow + 1);
-      setCurrentCol(0);
-    }
-  }, [board, currentRow, currentCol, answer]);
+  const getTileColor = (letter: string, index: number) => {
+    const isCorrectLetter = word.includes(letter);
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyPress);
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [currentCol, handleKeyPress]);
+    if (!isCorrectLetter) {
+      return "rgb(58, 58, 60)";
+    }
+
+    const letterInThatPosition = word.charAt(index);
+    const isCorrectPosition = letter === letterInThatPosition;
+
+    if (isCorrectPosition) {
+      return "rgb(83, 141, 78)";
+    }
+
+    return "rgb(181, 159, 59)";
+  };
+
+  const handleSubmitWord = () => {
+    const currentWordArr = getCurrentWordArr();
+    if (currentWordArr.length !== 5) {
+      window.alert("Palavra deve ter 5 letras");
+      return;
+    }
+
+    const currentWord = currentWordArr.join("");
+    const isCorrectWord = wordsMock.includes(currentWord);
+    if (isCorrectWord) {
+      const firstLetterId = guessedWordCount * 5 + 1;
+      const interval = 200;
+      currentWordArr.forEach((letter, index) => {
+        setTimeout(() => {
+          const tileColor = getTileColor(letter, index);
+
+          const letterId = firstLetterId + index;
+          const letterEl = document.getElementById(String(letterId));
+          if (letterEl) {
+            letterEl.classList.add("animate__flipInX");
+            letterEl.style.background = tileColor;
+            letterEl.style.borderColor = tileColor;
+          }
+        }, interval * index);
+      });
+
+      setGuessedWordCount(guessedWordCount + 1);
+
+      if (currentWord === word) {
+        window.alert("Parabéns!");
+      }
+
+      if (guessedWords.length === 6) {
+        window.alert(
+          `Desculpe, você não tem mais tentativas! A palavra era ${word}.`
+        );
+      }
+
+      setGuessedWords([...guessedWords, []]);
+    } else {
+      window.alert("Palavra incorreta!");
+    }
+  };
+
+  const createSquares = () => {
+    const gameBoard = document.getElementById("board");
+
+    if (gameBoard) {
+      for (let index = 0; index < 30; index++) {
+        const square = document.createElement("div");
+        square.classList.add("square", "animate__animated");
+        square.setAttribute("id", (index + 1).toString());
+        gameBoard.appendChild(square);
+      }
+    }
+  };
+
+  const handleDeleteLetter = () => {
+    const currentWordArr = getCurrentWordArr();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const removedLetter = currentWordArr.pop();
+
+    guessedWords[guessedWords.length - 1] = currentWordArr;
+
+    const lastLetterEl = document.getElementById(String(availableSpace - 1));
+
+    if (lastLetterEl) {
+      lastLetterEl.textContent = "";
+    }
+
+    setAvailableSpace(availableSpace - 1);
+  };
+
+  const handleKeyClick = (letter: string) => {
+    if (letter === "enter") {
+      handleSubmitWord();
+      return;
+    }
+
+    if (letter === "del") {
+      handleDeleteLetter();
+      return;
+    }
+
+    updateGuessedWords(letter);
+  };
+
+  const renderKeyboard = () => {
+    const keyboardRows = [
+      ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+      ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+      ["enter", "z", "x", "c", "v", "b", "n", "m", "del"],
+    ];
+
+    return (
+      <div id="keyboard-container">
+        {keyboardRows.map((row, rowIndex) => (
+          <div className="keyboard-row" key={rowIndex}>
+            {row.map((key) => (
+              <button
+                key={key}
+                data-key={key}
+                onClick={() => handleKeyClick(key)}
+                className={`${
+                  key === "enter" || key === "del" ? "wide-button" : ""
+                }`}
+              >
+                {key}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div className="App">
-      <div></div>
+    <div id="container">
+      <div id="game">
+        <header>
+          <h1 className="title">WORDLE</h1>
+        </header>
+        <div id="board-container">
+          <div id="board"></div>
+        </div>
+        {renderKeyboard()}
+      </div>
     </div>
   );
 };
-
-export default WordleGame;
