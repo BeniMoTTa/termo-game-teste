@@ -1,17 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { wordsMock } from "../mock/mock";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { apiImage } from "../services/api";
 export const WordleGame = () => {
   const [word, setWord] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState("");
   const [guessedWords, setGuessedWords] = useState<string[][]>([[]]);
   const [availableSpace, setAvailableSpace] = useState<number>(1);
   const [guessedWordCount, setGuessedWordCount] = useState<number>(0);
+  const [attempts, setAttempts] = useState<number>(0);
+  const apiKey = "66iuuxcsVoQmd44vgbbBEQh0JNMuWMk4pR6JN1MJ9kHBWX9h1goLEp6U";
+  useEffect(() => {
+    const fetchImage = async () => {
+      const response = await apiImage.get(
+        `${Math.floor(Math.random() * 100) + 1}`,
+        {
+          headers: {
+            Authorization: apiKey,
+          },
+        }
+      );
+      const data = response.data;
 
+      setImageUrl(
+        data.photos[Math.floor(Math.random() * data.photos.length)].src.original
+      );
+    };
+    fetchImage();
+    const IntervalId = setInterval(fetchImage, 30000);
+    return () => clearInterval(IntervalId);
+  }, []);
   useEffect(() => {
     createSquares();
     getNewWord();
   }, []);
 
   const getNewWord = () => {
+    setAttempts(0);
     const randomIndex = Math.floor(Math.random() * wordsMock.length);
     const randomWord = wordsMock[randomIndex];
     setWord(randomWord);
@@ -55,6 +80,11 @@ export const WordleGame = () => {
   };
 
   const handleSubmitWord = () => {
+    if (attempts >= 6) {
+      window.alert("Desculpe, você não tem mais tentativas!");
+      return;
+    }
+
     const currentWordArr = getCurrentWordArr();
     if (currentWordArr.length !== 5) {
       window.alert("Palavra deve ter 5 letras");
@@ -93,6 +123,7 @@ export const WordleGame = () => {
       }
 
       setGuessedWords([...guessedWords, []]);
+      setAttempts(attempts + 1);
     } else {
       window.alert("Palavra incorreta!");
     }
@@ -102,7 +133,7 @@ export const WordleGame = () => {
     const gameBoard = document.getElementById("board");
 
     if (gameBoard) {
-      for (let index = 0; index < 30; index++) {
+      for (let index = 0; index < 15; index++) {
         const square = document.createElement("div");
         square.classList.add("square", "animate__animated");
         square.setAttribute("id", (index + 1).toString());
@@ -171,16 +202,29 @@ export const WordleGame = () => {
   };
 
   return (
-    <div id="container">
+    <div id="container" style={{ backgroundImage: `url(${imageUrl})` }}>
       <div id="game">
-        <header>
-          <h1 className="title">WORDLE</h1>
-        </header>
-        <div id="board-container">
-          <div id="board"></div>
+        <div className="box">
+          <svg viewBox="0 0 1320 300" style={{ zIndex: 2 }}>
+            <text x="50%" y="50%" dy=".35em" text-anchor="middle">
+              termo
+            </text>
+          </svg>
+          <span className="border-animate"></span>
+          <div id="board-container">
+            <div id="board"></div>
+          </div>
+          {renderKeyboard()}
         </div>
-        {renderKeyboard()}
       </div>
+      <button
+        className="w-[55px] h-[55px] rounded-full flex justify-center items-center fixed right-[40px] bottom-[80px] text-white bg-gradient-to-tl from-[#007bff] to-[#0056b3] border-[2px] border-white hover:shadow-2xl transform text-[30px] hover:scale-105 transition-transform"
+        onClick={() => console.log("qualquer")}
+      >
+        <div className="flex items-center ">
+          <InfoCircledIcon className="w-[65%] h-[80%] mt-[25px] mr-[10px]" />
+        </div>
+      </button>
     </div>
   );
 };

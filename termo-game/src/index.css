@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css?family=Anton|Roboto");
+
 * {
   margin: 0;
   padding: 0;
@@ -17,17 +19,70 @@ body {
 #container {
   display: flex;
   background-color: black;
-  height: 100%;
+  height: 100vh;
   align-items: center;
+  justify-center: center;
   flex-direction: column;
+  padding-bottom: 20px;
+  padding-top: 40px;
 }
 
 #game {
-  width: 100%;
-  max-width: 500px;
-  height: 100%;
+  width: 600px;
+  position: relative;
+  height: 800px;
+  border-radius: 20px;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px;
+  background: rgba(51, 51, 51, 0.6);
   flex-direction: column;
+  overflow: hidden;
+}
+#game::after {
+  content: "";
+  position: absolute;
+  width: 800px;
+  height: 1000px;
+  background-image: conic-gradient(
+    transparent,
+    transparent,
+    transparent,
+    #d400d4
+  );
+  animation: animate 4s linear infinite;
+  animation-delay: -2s;
+}
+#game::before {
+  content: "";
+  position: absolute;
+  width: 800px;
+  height: 1000px;
+  background-image: conic-gradient(
+    transparent,
+    transparent,
+    transparent,
+    #00ccff
+  );
+  animation: animate 4s linear infinite;
+}
+
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.border-animate {
+  position: absolute;
+  inset: 5px;
+  border-radius: 16px;
+  background: #0c1022;
+  z-index: 1;
 }
 
 header {
@@ -35,25 +90,32 @@ header {
 }
 
 .title {
-  color: gainsboro;
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin: 0.4rem 0 0.4rem 0;
-  text-align: center;
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bolder;
+  color: yellow;
+  font-size: 50px;
+  font-family: "Anton", sans-serif;
 }
 
 #board-container {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-grow: 1;
   overflow: hidden;
+  margin-bottom: 15px;
 }
 
 #board {
   display: grid;
+  position: relative;
+  z-index: 2;
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 5px;
   padding: 10px;
@@ -61,14 +123,15 @@ header {
 }
 
 .square {
-  border: 2px solid rgb(58, 58, 60);
+  border: 2px solid rgba(555, 555, 555, 0.5);
   min-width: 60px;
   min-height: 60px;
-  font-size: 50px;
+  position: relative;
+  z-index: 2;
+  font-size: 35px;
   font-weight: bold;
   color: gainsboro;
   text-transform: uppercase;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -76,17 +139,23 @@ header {
 
 #keyboard-container {
   height: 200px;
+  position: relative;
+  z-index: 2;
 }
 
 .keyboard-row {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: center;
-  width: 100%;
+  width: 450px;
   margin: 0 auto 8px;
   touch-action: manipulation;
 }
 
 .keyboard-row button {
+  position: relative;
+  z-index: 2;
   font-family: inherit;
   font-weight: bold;
   border: 0;
@@ -103,9 +172,51 @@ header {
 }
 
 .keyboard-row button.wide-button {
+  position: relative;
+  z-index: 2;
   flex-grow: 1.5;
 }
 
 .spacer-half {
+  position: relative;
+  z-index: 2;
   flex-grow: 0.5;
+}
+svg {
+  font-family: "Russo One", sans-serif;
+  position: absolute;
+  top: -20px;
+  right: 0;
+}
+svg text {
+  text-transform: uppercase;
+  animation: stroke 5s infinite alternate;
+  stroke-width: 2;
+  stroke: #365fa0;
+  font-size: 140px;
+}
+@keyframes stroke {
+  0% {
+    fill: rgba(72, 138, 20, 0);
+    stroke: rgba(54, 95, 160, 1);
+    stroke-dashoffset: 25%;
+    stroke-dasharray: 0 50%;
+    stroke-width: 2;
+  }
+  70% {
+    fill: rgba(72, 138, 20, 0);
+    stroke: rgba(54, 95, 160, 1);
+  }
+  80% {
+    fill: rgba(72, 138, 20, 0);
+    stroke: rgba(54, 95, 160, 1);
+    stroke-width: 3;
+  }
+  100% {
+    fill: rgba(72, 138, 204, 1);
+    stroke: rgba(54, 95, 160, 0);
+    stroke-dashoffset: -25%;
+    stroke-dasharray: 50% 0;
+    stroke-width: 0;
+  }
 }
