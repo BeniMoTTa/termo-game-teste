@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { wordsMock } from "../mock/mock";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { apiImage } from "../services/api";
 export const WordleGame = () => {
   const [word, setWord] = useState<string>("");
@@ -236,11 +237,14 @@ export const WordleGame = () => {
       </div>
       {!gameInProgress && (
         <button
-          className="absolute bottom-16 border p-4"
+          className="btn-hover color-7"
           onClick={handlePlayAgain}
           style={{ zIndex: 2 }}
         >
-          Jogar Novamente
+          <div className="h-full flex items-center justify-center relative w-full  text-white">
+            Jogar Novamente{" "}
+            <ReloadIcon className="absolute right-3 top-5 full-5" />
+          </div>
         </button>
       )}
       <button

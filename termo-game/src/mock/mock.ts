@@ -1002,4 +1002,12 @@ export const wordsMock = [
   "coifa",
   "turno",
   "terca",
+  "trava",
+  "terco",
+  "somem",
+  "tomem",
+  "cocem",
+  "levem",
+  "indas",
+  "saida",
 ];
