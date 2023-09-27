@@ -8,7 +8,9 @@ export const WordleGame = () => {
   const [guessedWords, setGuessedWords] = useState<string[][]>([[]]);
   const [availableSpace, setAvailableSpace] = useState<number>(1);
   const [guessedWordCount, setGuessedWordCount] = useState<number>(0);
+  const [gameInProgress, setGameInProgress] = useState<boolean>(true);
   const [attempts, setAttempts] = useState<number>(0);
+
   const apiKey = "66iuuxcsVoQmd44vgbbBEQh0JNMuWMk4pR6JN1MJ9kHBWX9h1goLEp6U";
   useEffect(() => {
     const fetchImage = async () => {
@@ -79,8 +81,12 @@ export const WordleGame = () => {
   };
 
   const handleSubmitWord = () => {
+    if (!gameInProgress) {
+      return;
+    }
     if (attempts >= 6) {
       window.alert("Desculpe, você não tem mais tentativas!");
+      setGameInProgress(false);
       return;
     }
 
@@ -113,12 +119,14 @@ export const WordleGame = () => {
 
       if (currentWord === word) {
         window.alert("Parabéns!");
+        setGameInProgress(false);
       }
 
       if (guessedWords.length === 6) {
         window.alert(
           `Desculpe, você não tem mais tentativas! A palavra era ${word}.`
         );
+        setGameInProgress(false);
       }
 
       setGuessedWords([...guessedWords, []]);
@@ -142,6 +150,9 @@ export const WordleGame = () => {
   };
 
   const handleDeleteLetter = () => {
+    if (!gameInProgress) {
+      return;
+    }
     const currentWordArr = getCurrentWordArr();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const removedLetter = currentWordArr.pop();
@@ -158,6 +169,9 @@ export const WordleGame = () => {
   };
 
   const handleKeyClick = (letter: string) => {
+    if (!gameInProgress) {
+      return;
+    }
     if (letter === "enter") {
       handleSubmitWord();
       return;
@@ -200,6 +214,10 @@ export const WordleGame = () => {
     );
   };
 
+  const handlePlayAgain = () => {
+    location.reload();
+  };
+
   return (
     <div id="container" style={{ backgroundImage: `url(${imageUrl})` }}>
       <div id="game">
@@ -216,6 +234,15 @@ export const WordleGame = () => {
           {renderKeyboard()}
         </div>
       </div>
+      {!gameInProgress && (
+        <button
+          className="absolute bottom-16 border p-4"
+          onClick={handlePlayAgain}
+          style={{ zIndex: 2 }}
+        >
+          Jogar Novamente
+        </button>
+      )}
       <button
         className="w-[55px] h-[55px] rounded-full flex justify-center items-center fixed right-[40px] bottom-[80px] text-white bg-gradient-to-tl from-[#007bff] to-[#0056b3] border-[2px] border-white hover:shadow-2xl transform text-[30px] hover:scale-105 transition-transform"
         onClick={() => console.log("qualquer")}

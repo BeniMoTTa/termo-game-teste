@@ -1001,4 +1001,5 @@ export const wordsMock = [
   "sigma",
   "coifa",
   "turno",
+  "terca",
 ];
