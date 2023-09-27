@@ -27,8 +27,6 @@ export const WordleGame = () => {
       );
     };
     fetchImage();
-    const IntervalId = setInterval(fetchImage, 30000);
-    return () => clearInterval(IntervalId);
   }, []);
   useEffect(() => {
     createSquares();
@@ -40,6 +38,7 @@ export const WordleGame = () => {
     const randomIndex = Math.floor(Math.random() * wordsMock.length);
     const randomWord = wordsMock[randomIndex];
     setWord(randomWord);
+    console.log("Palavra escolhida:", randomWord);
   };
 
   const getCurrentWordArr = () => {
