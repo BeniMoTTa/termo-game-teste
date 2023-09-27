@@ -1010,4 +1010,5 @@ export const wordsMock = [
   "levem",
   "indas",
   "saida",
+  "resta",
 ];
