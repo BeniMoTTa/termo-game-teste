@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { wordsMock } from "../mock/mock";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -155,8 +155,8 @@ export const WordleGame = () => {
       return;
     }
     const currentWordArr = getCurrentWordArr();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const removedLetter = currentWordArr.pop();
+
+    currentWordArr.pop();
 
     guessedWords[guessedWords.length - 1] = currentWordArr;
 
