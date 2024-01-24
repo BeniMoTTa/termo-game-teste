@@ -1011,4 +1011,5 @@ export const wordsMock = [
   "indas",
   "saida",
   "resta",
+  "perus",
 ];
